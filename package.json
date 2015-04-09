@@ -1,6 +1,6 @@
 {
-  "name": "webhook-handler",
-  "version": "0.0.0",
+  "name": "Webhook Handler",
+  "version": "0.1.0",
   "description": "A lightweight server to handle webhooks and launch scripts",
   "main": "app.js",
   "dependencies": {
@@ -17,5 +17,5 @@
     "Nodejs"
   ],
   "author": "Matthieu Nicolas",
-  "license": "ISC"
+  "license": "GNU GPL 3"
 }

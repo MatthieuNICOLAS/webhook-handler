@@ -60,7 +60,7 @@ app.post('/', function (req, res) {
 
 	if(action === 'push' &&
 		ref === 'refs/heads/prod' &&
-		repositoryName === 'oster/PLM') {
+		repositoryName === 'MatthieuNICOLAS/webPLM') {
 		launchRestartScript();
 	}
 
