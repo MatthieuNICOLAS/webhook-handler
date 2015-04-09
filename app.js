@@ -15,30 +15,29 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.post('/', function (req, res) {
-  console.log('req.body: ', req.body);
-  var params = req.body;
-  var action = params.action;
-  var ref = params.ref;
-  var repositoryName = 'oster/PLM';
-  var secret = params.secret;
-  //var repositoryName = params.repository.full_name;
+	console.log('req.body: ', req.body);
+	var params = req.body;
+	var action = params.action;
+	var ref = params.ref;
+	var secret = params.secret;
+	var repositoryName = params.repository.full_name;
 
-  if(action === 'push' &&
-  	ref === 'refs/heads/prod' &&
-  	repositoryName === 'oster/PLM' && 
-  	secret === WEBHOOK_SECRET) {
-  	launchRestartScript();
-  }
+	if(action === 'push' &&
+		ref === 'refs/heads/prod' &&
+		repositoryName === 'oster/PLM' && 
+		secret === WEBHOOK_SECRET) {
+		launchRestartScript();
+	}
 
-  res.send('OK');
+	res.send('OK');
 });
 
 server = app.listen(WEBHOOK_PORT, function () {
 
-  var host = server.address().address;
-  var port = server.address().port;
+	var host = server.address().address;
+	var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
+	console.log('Webhook handler listening at http://%s:%s', host, port);
 });
 
 function launchRestartScript() {
