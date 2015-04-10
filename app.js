@@ -17,7 +17,9 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 function launchRestartScript() {
-	child = spawn(RESTART_SCRIPT);
+	child = spawn(RESTART_SCRIPT, [], {
+		detached: true // We don't want to kill the webPLM when the NodeJS server stops
+	});
 	child.stdout.on('data', 
     function (data) {
         console.log('tail output: ' + data);
@@ -28,6 +30,7 @@ function launchRestartScript() {
         console.log('err data: ' + data);
     }
 	);
+	child.unref();
 }
 
 function validRequest(req) {
