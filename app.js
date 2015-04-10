@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var crypto = require('crypto');
 
 var sys = require('sys');
-var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 var child;
 
 var WEBHOOK_PORT = process.env.WEBHOOK_PORT || 3000;
@@ -17,13 +17,17 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 function launchRestartScript() {
-	child = exec(RESTART_SCRIPT, function (error, stdout, stderr) {
-		sys.print('stdout: ' + stdout);
-		sys.print('stderr: ' + stderr);
-		if (error !== null) {
-			console.log('exec error: ' + error);
-		}
-	});
+	child = spawn(RESTART_SCRIPT);
+	child.stdout.on('data', 
+    function (data) {
+        console.log('tail output: ' + data);
+   	}
+  );
+  child.stderr.on('data',
+    function (data) {
+        console.log('err data: ' + data);
+    }
+	);
 }
 
 function validRequest(req) {
