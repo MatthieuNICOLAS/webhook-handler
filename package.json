@@ -1,5 +1,5 @@
 {
-  "name": "Webhook Handler",
+  "name": "webhook-handler",
   "version": "0.1.0",
   "description": "A lightweight server to handle webhooks and launch scripts",
   "main": "app.js",

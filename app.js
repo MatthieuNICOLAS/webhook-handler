@@ -17,66 +17,67 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 function launchRestartScript() {
-	child = spawn(RESTART_SCRIPT, [], {
-		detached: true // We don't want to kill the webPLM when the NodeJS server stops
-	});
-	child.stdout.on('data', 
+  child = spawn(RESTART_SCRIPT, [], {
+    detached: true // We don't want to kill the webPLM when the NodeJS server stops
+  });
+  child.stdout.on('data', 
     function (data) {
         console.log('tail output: ' + data);
-   	}
+    }
   );
   child.stderr.on('data',
     function (data) {
         console.log('err data: ' + data);
     }
-	);
-	child.unref();
+  );
+  child.unref();
 }
 
 function validRequest(req) {
-	var hmac;
+  var hmac;
   var calculatedSignature;
   var payload = req.body;
 
-	hmac = crypto.createHmac('sha1', WEBHOOK_SECRET);
-	hmac.update(JSON.stringify(payload));
-	calculatedSignature = 'sha1=' + hmac.digest('hex');
+  hmac = crypto.createHmac('sha1', WEBHOOK_SECRET);
+  hmac.update(JSON.stringify(payload));
+  calculatedSignature = 'sha1=' + hmac.digest('hex');
 
-	if (req.headers['x-hub-signature'] !== calculatedSignature) {
-  	return false;
-	}
-	console.log('All good!');
-	return true;
+  if (req.headers['x-hub-signature'] !== calculatedSignature) {
+    return false;
+  }
+  console.log('All good!');
+  return true;
 }
 
 app.post('/', function (req, res) {
-	var params;
-	var action;
-	var ref;
-	var repositoryName;
+  var params;
+  var action;
+  var ref;
+  var repositoryName;
 
-	console.log('req.body: ', req.body);
+  console.log('req.body: ', req.body);
 
-	if(!validRequest(req))
-		res.sendStatus(403);
+  if(!validRequest(req)) {
+    res.sendStatus(403);
+  }
+  else {
+    params = req.body;
+    action = params.action;
+    ref = params.ref;
+    repositoryName = params.repository.full_name;
 
-	params = req.body;
-	action = params.action;
-	ref = params.ref;
-	repositoryName = params.repository.full_name;
-
-	if(action === 'push' &&
-		ref === 'refs/heads/prod' &&
-		repositoryName === 'MatthieuNICOLAS/webPLM') {
-		launchRestartScript();
-	}
-
-	res.sendStatus(200);
+    if(action === 'push' &&
+      ref === 'refs/heads/prod' &&
+      repositoryName === 'MatthieuNICOLAS/webPLM') {
+      launchRestartScript();
+    }
+    res.sendStatus(200);
+  }
 });
 
 server = app.listen(WEBHOOK_PORT, function () {
-	var host = server.address().address;
-	var port = server.address().port;
+  var host = server.address().address;
+  var port = server.address().port;
 
-	console.log('Webhook handler listening at http://%s:%s', host, port);
+  console.log('Webhook handler listening at http://%s:%s', host, port);
 });
